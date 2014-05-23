@@ -22,6 +22,8 @@
               2012-2013 Arseny Smirnov
               2012-2013 Aliaksei Levin
               
+    URL: https://github.com/vk-com/kphp-kdb/blob/master/KPHP/runtime/bcmath.cpp
+              
     Adapted to QT5:
         2014 Kijam Lopez B. <klopez@cuado.co>
 */
