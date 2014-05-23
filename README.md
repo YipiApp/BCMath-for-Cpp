@@ -22,6 +22,8 @@ BC Math Functions
 - QBCMath::bcscale — Set default scale parameter for all bc math functions (https://php.net/manual/en/function.bcscale.php)
     
 - QBCMath::bcsub — Subtract one arbitrary precision number from another (https://php.net/manual/en/function.bcsub.php)
+
+- QBCMath::bcround — Round decimals, receives a single parameter to determine how many decimal places should be.
     
     
 
@@ -44,6 +46,7 @@ Funciones de BC Math
     
 - QBCMath::bcsub — Resta un número de precisión arbitraria de otro (https://php.net/manual/es/function.bcsub.php)
 
+- QBCMath::bcround — Redondea los decimales, recibe un solo parámetro para determinar cuantos decimales deben quedar.
     
 USAGE:
 ===========
@@ -99,6 +102,7 @@ Code Test
     qDebug()<<"Compare 9:  "<<QBCMath("2")<=QBCMath("2");
     qDebug()<<"Compare 10: "<<QBCMath("2")> QBCMath("2");
     qDebug()<<"Compare 11: "<<QBCMath("2")>=QBCMath("2");
+    
     qDebug()<<"Round 1: "<<QBCMath::bcround("123.01254").toStdString().c_str();
     qDebug()<<"Round 2: "<<QBCMath::bcround("-123.01254", 3).toStdString().c_str();
     qDebug()<<"Round 3: "<<QBCMath::bcround("123.01254", 2).toStdString().c_str();
