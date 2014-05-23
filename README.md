@@ -7,42 +7,42 @@ BC-Math PHP (https://php.net/manual/en/intro.bc.php) Adapted to Qt5
 BC Math Functions
 ===========
 
-    QBCMath::bcadd — Add two arbitrary precision numbers (https://php.net/manual/en/function.bcadd.php)
+- QBCMath::bcadd — Add two arbitrary precision numbers (https://php.net/manual/en/function.bcadd.php)
     
-    QBCMath::bccomp — Compare two arbitrary precision numbers (https://php.net/manual/en/function.bccomp.php)
+- QBCMath::bccomp — Compare two arbitrary precision numbers (https://php.net/manual/en/function.bccomp.php)
     
-    QBCMath::bcdiv — Divide two arbitrary precision numbers (https://php.net/manual/en/function.bcdiv.php)
+- QBCMath::bcdiv — Divide two arbitrary precision numbers (https://php.net/manual/en/function.bcdiv.php)
     
-    QBCMath::bcmod — Get modulus of an arbitrary precision number (https://php.net/manual/en/function.bcmod.php)
+- QBCMath::bcmod — Get modulus of an arbitrary precision number (https://php.net/manual/en/function.bcmod.php)
     
-    QBCMath::bcmul — Multiply two arbitrary precision numbers (https://php.net/manual/en/function.bcmul.php)
+- QBCMath::bcmul — Multiply two arbitrary precision numbers (https://php.net/manual/en/function.bcmul.php)
     
-    QBCMath::bcpow — Raise an arbitrary precision number to another (https://php.net/manual/en/function.bcpow.php)
+- QBCMath::bcpow — Raise an arbitrary precision number to another (https://php.net/manual/en/function.bcpow.php)
     
-    QBCMath::bcscale — Set default scale parameter for all bc math functions (https://php.net/manual/en/function.bcscale.php)
+- QBCMath::bcscale — Set default scale parameter for all bc math functions (https://php.net/manual/en/function.bcscale.php)
     
-    bQBCMath::bcsub — Subtract one arbitrary precision number from another (https://php.net/manual/en/function.bcsub.php)
+- QBCMath::bcsub — Subtract one arbitrary precision number from another (https://php.net/manual/en/function.bcsub.php)
     
     
 
 Funciones de BC Math
 ===========
 
-    QBCMath::bcadd — Añade dos números de precisión arbitrária (https://php.net/manual/es/function.bcadd.php)
+- QBCMath::bcadd — Añade dos números de precisión arbitrária (https://php.net/manual/es/function.bcadd.php)
     
-    QBCMath::bccomp — Compara dos números de precisión arbitraria (https://php.net/manual/es/function.bccomp.php)
+- QBCMath::bccomp — Compara dos números de precisión arbitraria (https://php.net/manual/es/function.bccomp.php)
     
-    QBCMath::bcdiv — Divide dos números de precisión arbitraria (https://php.net/manual/es/function.bcdiv.php)
+- QBCMath::bcdiv — Divide dos números de precisión arbitraria (https://php.net/manual/es/function.bcdiv.php)
     
-    QBCMath::bcmod — Obtiene el módulo de un número de precisión arbitraria (https://php.net/manual/es/function.bcmod.php)
+- QBCMath::bcmod — Obtiene el módulo de un número de precisión arbitraria (https://php.net/manual/es/function.bcmod.php)
     
-    QBCMath::bcmul — Multiplica dos números de precisión arbitraria (https://php.net/manual/es/function.bcmul.php)
+- QBCMath::bcmul — Multiplica dos números de precisión arbitraria (https://php.net/manual/es/function.bcmul.php)
     
-    QBCMath::bcpow — Elevar un número de precisión arbitraria a otro (https://php.net/manual/es/function.bcpow.php)
+- QBCMath::bcpow — Elevar un número de precisión arbitraria a otro (https://php.net/manual/es/function.bcpow.php)
     
-    QBCMath::bcscale — Establece los parametros de scale por defecto para todas las funciones matemáticas de bc (https://php.net/manual/es/function.bcscale.php)
+- QBCMath::bcscale — Establece los parametros de scale por defecto para todas las funciones matemáticas de bc (https://php.net/manual/es/function.bcscale.php)
     
-    QBCMath::bcsub — Resta un número de precisión arbitraria de otro (https://php.net/manual/es/function.bcsub.php)
+- QBCMath::bcsub — Resta un número de precisión arbitraria de otro (https://php.net/manual/es/function.bcsub.php)
 
     
 USAGE:
@@ -82,6 +82,23 @@ Code Test
     qDebug()<<"Result Super Precision 2: "<<result2.toString().toStdString().c_str();
     qDebug()<<"Result Super Precision 3: "<<result3.toString().toStdString().c_str();
     qDebug()<<"Result Super Precision 4: "<<result4.toString().toStdString().c_str();
+    
+    //Other example
+    QBCMath::bcscale(4); //Num Decimals
+    qDebug()<<"Other 1: "<<QBCMath::bcmul("1000000.0134", "8.0234").toStdString().c_str();
+    qDebug()<<"Other 2: "<<QBCMath::bcadd("1000000.0134", "8.0234").toStdString().c_str();
+     
+    qDebug()<<"Compare 1:  "<<QBCMath::bccomp("1", "2");
+    qDebug()<<"Compare 2:  "<<QBCMath::bccomp("1.00001", "1", 3); 
+    qDebug()<<"Compare 3:  "<<QBCMath::bccomp("1.00001", "1", 5);
+    qDebug()<<"Compare 4:  "<<QBCMath("1")< QBCMath("2");
+    qDebug()<<"Compare 5:  "<<QBCMath("1")<=QBCMath("2");
+    qDebug()<<"Compare 6:  "<<QBCMath("1")> QBCMath("2");
+    qDebug()<<"Compare 7:  "<<QBCMath("1")>=QBCMath("2");
+    qDebug()<<"Compare 8:  "<<QBCMath("2")< QBCMath("2");
+    qDebug()<<"Compare 9:  "<<QBCMath("2")<=QBCMath("2");
+    qDebug()<<"Compare 10: "<<QBCMath("2")> QBCMath("2");
+    qDebug()<<"Compare 11: "<<QBCMath("2")>=QBCMath("2");
 
 Result
 ===========
@@ -101,3 +118,29 @@ Result
     Result Super Precision 3:  -18672164360341183116.9114783895073349180904753962992796943871920962352436079118338887287186
 
     Result Super Precision 4:  -1891885794154043400.2804849527556211973567525043250278948318788149660700494315139982452600
+    
+    Other 1:  8023400.1075
+    
+    Other 2:  1000008.0368
+    
+    Compare 1:   -1
+    
+    Compare 2:   0
+    
+    Compare 3:   1
+    
+    Compare 4:   true
+    
+    Compare 5:   true
+    
+    Compare 6:   false
+    
+    Compare 7:   false
+    
+    Compare 8:   false
+    
+    Compare 9:   true
+    
+    Compare 10:  false
+    
+    Compare 11:  true
