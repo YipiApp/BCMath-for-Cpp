@@ -65,7 +65,7 @@ Code Test
     test-=1.23; //sub
     qDebug()<<"Result BigDecimal 2: "<<test.toString().toStdString().c_str();
     
-    test*=1.23; //add
+    test*=1.23; //mul
     qDebug()<<"Result BigDecimal 3: "<<test.toString().toStdString().c_str();
     
     test*=-1.23; //mul
