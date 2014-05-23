@@ -21,9 +21,9 @@
     Copyright 2012-2013 Vkontakte Ltd
               2012-2013 Arseny Smirnov
               2012-2013 Aliaksei Levin
-              
+
     URL: https://github.com/vk-com/kphp-kdb/blob/master/KPHP/runtime/bcmath.cpp
-              
+
     Adapted to QT5:
         2014 Kijam Lopez B. <klopez@cuado.co>
 */
@@ -124,7 +124,7 @@ static int bc_comp (const char *lhs, int lint, int ldot, int lfrac, int lscale, 
   return 0;
 }
 
-static QString bc_round (char *lhs, int lint, int ldot, int lfrac, int lscale, int scale, int sign, int add_trailing_zeroes) {
+static QString bc_round (char *lhs, int lint, int ldot, int lfrac, int lscale, int scale, int sign, bool add_trailing_zeroes, bool round_last = false) {
   while (lhs[lint] == '0' && lint + 1 < ldot) {
     lint++;
   }
@@ -141,40 +141,40 @@ static QString bc_round (char *lhs, int lint, int ldot, int lfrac, int lscale, i
     }
   }
 
-  if (lscale > scale) {
-    lscale = scale;
-  }
-
-/*
-  if (lscale > scale) {
-    while (scale > 0 && lhs[lfrac + scale - 1] == '9' && lhs[lfrac + scale] >= '5') {
-      scale--;
-    }
-    lscale = scale;
-    if (lhs[lfrac + scale] >= '5') {
-      if (scale > 0) {
-        lhs[lfrac + scale - 1]++;
-      } else {
-        lfrac--;
-        Q_ASSERT (lfrac == ldot);
-
-        int i;
-        lhs[lint - 1] = '0';
-        for (i = 0; lhs[ldot - i - 1] == '9'; i++) {
-          lhs[ldot - i - 1] = '0';
+  if(round_last) {
+      if (lscale > scale) {
+        while (scale > 0 && lhs[lfrac + scale - 1] == '9' && lhs[lfrac + scale] >= '5') {
+          scale--;
         }
-        lhs[ldot - i - 1]++;
-        if (ldot - i - 1 < lint) {
-          lint = ldot - i - 1;
+        lscale = scale;
+        if (lhs[lfrac + scale] >= '5') {
+          if (scale > 0) {
+            lhs[lfrac + scale - 1]++;
+          } else {
+            lfrac--;
+            Q_ASSERT (lfrac == ldot);
+
+            int i;
+            lhs[lint - 1] = '0';
+            for (i = 0; lhs[ldot - i - 1] == '9'; i++) {
+              lhs[ldot - i - 1] = '0';
+            }
+            lhs[ldot - i - 1]++;
+            if (ldot - i - 1 < lint) {
+              lint = ldot - i - 1;
+            }
+          }
         }
       }
-    }
-  }
 
-  while (lscale > 0 && lhs[lfrac + lscale - 1] == '0') {
-    lscale--;
+      while (lscale > 0 && lhs[lfrac + lscale - 1] == '0') {
+        lscale--;
+      }
+  }else{
+      if (lscale > scale) {
+        lscale = scale;
+      }
   }
-*/
 
   if (lscale == 0 && lfrac > ldot) {
     lfrac--;
@@ -775,4 +775,33 @@ int QBCMath::bccomp (const QString &lhs, const QString &rhs, int scale) {
   }
 
   return (1 - 2 * (lsign < 0)) * bc_comp (lhs.toStdString().c_str(), lint, ldot, lfrac, lscale, rhs.toStdString().c_str(), rint, rdot, rfrac, rscale, scale);
+}
+
+QString QBCMath::bcround (const QString &lhs, int scale) {
+    if (lhs.isEmpty()) {
+      return QBCMath::bcround (ZERO, scale);
+    }
+
+    if (scale == INT_MIN) {
+      scale = bc_scale;
+    }
+
+    if (scale < 0) {
+      qWarning() << "Wrong parameter scale = "<<scale<<" in function bccomp";
+      scale = 0;
+    }
+
+    int lsign, lint, ldot, lfrac, lscale;
+    if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) < 0) {
+      qWarning() << "First parameter \""<<lhs.toStdString().c_str()<<"\" in function bcround is not a number";
+      return 0;
+    }
+
+    int len = lhs.size();
+    QString result(len + 1, '0');
+    for(int i = len-1;i>=lint;--i) {
+        result[i+1] = lhs[i];
+    }
+
+    return bc_round ((char*)result.toUtf8().data(), lint+1, ldot+1, lfrac+1, lscale, scale, lsign, 1, 1);
 }

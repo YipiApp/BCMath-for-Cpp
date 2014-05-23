@@ -99,6 +99,22 @@ Code Test
     qDebug()<<"Compare 9:  "<<QBCMath("2")<=QBCMath("2");
     qDebug()<<"Compare 10: "<<QBCMath("2")> QBCMath("2");
     qDebug()<<"Compare 11: "<<QBCMath("2")>=QBCMath("2");
+    qDebug()<<"Round 1: "<<QBCMath::bcround("123.01254").toStdString().c_str();
+    qDebug()<<"Round 2: "<<QBCMath::bcround("-123.01254", 3).toStdString().c_str();
+    qDebug()<<"Round 3: "<<QBCMath::bcround("123.01254", 2).toStdString().c_str();
+    pi.round(3);
+    qDebug()<<"Round 4: "<<pi.toString().toStdString().c_str();
+
+    QBCMath part1("-.123");
+    QBCMath part2(".123");
+    QBCMath part3("123");
+    qDebug()<<"Int part 1: "<<part1.getIntPart().toStdString().c_str();
+    qDebug()<<"Dec part 1: "<<part1.getDecPart().toStdString().c_str();
+    qDebug()<<"Int part 2: "<<part2.getIntPart().toStdString().c_str();
+    qDebug()<<"Dec part 2: "<<part2.getDecPart().toStdString().c_str();
+    qDebug()<<"Int part 3: "<<part3.getIntPart().toStdString().c_str();
+    qDebug()<<"Dec part 3: "<<part3.getDecPart().toStdString().c_str();
+
 
 Result
 ===========
@@ -144,3 +160,23 @@ Result
     Compare 10:  false
     
     Compare 11:  true
+    
+    Round 1:  123.0125
+    
+    Round 2:  -123.013
+
+    Round 3:  123.01
+    
+    Round 4:  3.142
+    
+    Int part 1:  -0
+    
+    Dec part 1:  123
+    
+    Int part 2:  0
+    
+    Dec part 2:  123
+    
+    Int part 3:  123
+    
+    Dec part 3:  0
