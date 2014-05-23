@@ -21,6 +21,9 @@
     Copyright 2012-2013 Vkontakte Ltd
               2012-2013 Arseny Smirnov
               2012-2013 Aliaksei Levin
+              
+    Adapted to QT5:
+        2014 Kijam Lopez B. <klopez@cuado.co>
 */
 
 
