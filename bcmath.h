@@ -150,6 +150,8 @@ public:
         if(dot >= 0) {
             if(dot == 0)
                 return QString("0");
+            if(dot == 1 && value[0] == '-')
+                return QString("-0");
             return value.mid(0, dot);
         }else{
             return value;

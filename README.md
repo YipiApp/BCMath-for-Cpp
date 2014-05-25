@@ -1,10 +1,10 @@
-BC-Math for Qt
+BC-Math for Qt and C++ (Equivalent BigDecimal in Java)
 ===========
 
-BC-Math PHP (https://php.net/manual/en/intro.bc.php) Adapted to Qt. Tested only in Qt5.
+BC-Math PHP (https://php.net/manual/en/intro.bc.php) Adapted to Qt and STL C++. Tested only in Qt5.
 
 
-BC Math Functions
+BC Math Functions for Qt
 ===========
 
 - QBCMath::bcadd: Add two arbitrary precision numbers (https://php.net/manual/en/function.bcadd.php)
@@ -26,34 +26,37 @@ BC Math Functions
 - QBCMath::bcround: Round decimals, receives a single parameter to determine how many decimal places should be.
     
     
-
-Funciones de BC Math
+BC Math Functions for STL C++
 ===========
 
-- QBCMath::bcadd: Añade dos números de precisión arbitrária (https://php.net/manual/es/function.bcadd.php)
+- BCMath::bcadd: Add two arbitrary precision numbers (https://php.net/manual/en/function.bcadd.php)
     
-- QBCMath::bccomp: Compara dos números de precisión arbitraria (https://php.net/manual/es/function.bccomp.php)
+- BCMath::bccomp: Compare two arbitrary precision numbers (https://php.net/manual/en/function.bccomp.php)
     
-- QBCMath::bcdiv: Divide dos números de precisión arbitraria (https://php.net/manual/es/function.bcdiv.php)
+- BCMath::bcdiv: Divide two arbitrary precision numbers (https://php.net/manual/en/function.bcdiv.php)
     
-- QBCMath::bcmod: Obtiene el módulo de un número de precisión arbitraria (https://php.net/manual/es/function.bcmod.php)
+- BCMath::bcmod: Get modulus of an arbitrary precision number (https://php.net/manual/en/function.bcmod.php)
     
-- QBCMath::bcmul: Multiplica dos números de precisión arbitraria (https://php.net/manual/es/function.bcmul.php)
+- BCMath::bcmul: Multiply two arbitrary precision numbers (https://php.net/manual/en/function.bcmul.php)
     
-- QBCMath::bcpow: Elevar un número de precisión arbitraria a otro (https://php.net/manual/es/function.bcpow.php)
+- BCMath::bcpow: Raise an arbitrary precision number to another (https://php.net/manual/en/function.bcpow.php)
     
-- QBCMath::bcscale: Establece los parametros de scale por defecto para todas las funciones matemáticas de bc (https://php.net/manual/es/function.bcscale.php)
+- BCMath::bcscale: Set default scale parameter for all bc math functions (https://php.net/manual/en/function.bcscale.php)
     
-- QBCMath::bcsub: Resta un número de precisión arbitraria de otro (https://php.net/manual/es/function.bcsub.php)
+- BCMath::bcsub: Subtract one arbitrary precision number from another (https://php.net/manual/en/function.bcsub.php)
 
-- QBCMath::bcround: Redondea los decimales, recibe un solo parámetro para determinar cuantos decimales deben quedar.
+- BCMath::bcround: Round decimals, receives a single parameter to determine how many decimal places should be.
+        
     
-USAGE:
+USAGE (Qt)
 ===========
+
+Copy in your project only bcmath.h and bcmath.cpp and add next line in your header:
 
     #include "bcmath.h"
+    
 
-Code Test
+Code Test (Qt)
 ===========
     
     QBCMath::bcscale(4); //Num Decimals
@@ -94,14 +97,14 @@ Code Test
     qDebug()<<"Compare 1:  "<<QBCMath::bccomp("1", "2");
     qDebug()<<"Compare 2:  "<<QBCMath::bccomp("1.00001", "1", 3); 
     qDebug()<<"Compare 3:  "<<QBCMath::bccomp("1.00001", "1", 5);
-    qDebug()<<"Compare 4:  "<<QBCMath("1")< QBCMath("2");
-    qDebug()<<"Compare 5:  "<<QBCMath("1")<=QBCMath("2");
-    qDebug()<<"Compare 6:  "<<QBCMath("1")> QBCMath("2");
-    qDebug()<<"Compare 7:  "<<QBCMath("1")>=QBCMath("2");
-    qDebug()<<"Compare 8:  "<<QBCMath("2")< QBCMath("2");
-    qDebug()<<"Compare 9:  "<<QBCMath("2")<=QBCMath("2");
-    qDebug()<<"Compare 10: "<<QBCMath("2")> QBCMath("2");
-    qDebug()<<"Compare 11: "<<QBCMath("2")>=QBCMath("2");
+    qDebug()<<"Compare 4:  "<<(QBCMath("1")< QBCMath("2"));
+    qDebug()<<"Compare 5:  "<<(QBCMath("1")<=QBCMath("2"));
+    qDebug()<<"Compare 6:  "<<(QBCMath("1")> QBCMath("2"));
+    qDebug()<<"Compare 7:  "<<(QBCMath("1")>=QBCMath("2"));
+    qDebug()<<"Compare 8:  "<<(QBCMath("2")< QBCMath("2"));
+    qDebug()<<"Compare 9:  "<<(QBCMath("2")<=QBCMath("2"));
+    qDebug()<<"Compare 10: "<<(QBCMath("2")> QBCMath("2"));
+    qDebug()<<"Compare 11: "<<(QBCMath("2")>=QBCMath("2"));
     
     qDebug()<<"Round 1: "<<QBCMath::bcround("123.01254").toStdString().c_str();
     qDebug()<<"Round 2: "<<QBCMath::bcround("-123.01254", 3).toStdString().c_str();
@@ -118,6 +121,79 @@ Code Test
     qDebug()<<"Dec part 2: "<<part2.getDecPart().toStdString().c_str();
     qDebug()<<"Int part 3: "<<part3.getIntPart().toStdString().c_str();
     qDebug()<<"Dec part 3: "<<part3.getDecPart().toStdString().c_str();
+
+USAGE (STL C++)
+===========
+
+Copy in your project only bcmath_stl.h and bcmath_stl.cpp and add next line in your header:
+
+    #include "bcmath_stl.h"
+
+Code Test (STL C++)
+===========
+
+    BCMath::bcscale(4); //Num Decimals
+    BCMath test("-5978");
+
+    test^=30; //Pow, only integers. Not work decimals.
+    std::cout<<"Result BigDecimal 1: "<<test.toString().c_str()<<std::endl;
+
+    test-=1.23; //sub
+    std::cout<<"Result BigDecimal 2: "<<test.toString().c_str()<<std::endl;
+
+    test*=1.23; //mul
+    std::cout<<"Result BigDecimal 3: "<<test.toString().c_str()<<std::endl;
+
+    test*=-1.23; //mul
+    std::cout<<"Result BigDecimal 4: "<<test.toString().c_str()<<std::endl;
+
+    BCMath::bcscale(70); //Num Decimals
+
+    BCMath randNum("-5943534512345234545.8998928392839247844353457");
+    BCMath pi("3.1415926535897932384626433832795028841971693993751058209749445923078164062862");
+
+    BCMath result1 = randNum + pi;
+    BCMath result2 = randNum - pi;
+    BCMath result3 = randNum * pi;
+    BCMath result4 = randNum / pi;
+
+    std::cout<<"Result Super Precision 1: "<<result1.toString().c_str()<<std::endl;
+    std::cout<<"Result Super Precision 2: "<<result2.toString().c_str()<<std::endl;
+    std::cout<<"Result Super Precision 3: "<<result3.toString().c_str()<<std::endl;
+    std::cout<<"Result Super Precision 4: "<<result4.toString().c_str()<<std::endl;
+
+    //Other example
+    BCMath::bcscale(4); //Num Decimals
+    std::cout<<"Other 1: "<<BCMath::bcmul("1000000.0134", "8.0234").c_str()<<std::endl;
+    std::cout<<"Other 2: "<<BCMath::bcadd("1000000.0134", "8.0234").c_str()<<std::endl;
+
+    std::cout<<"Compare 1:  "<<BCMath::bccomp("1", "2")<<std::endl;
+    std::cout<<"Compare 2:  "<<BCMath::bccomp("1.00001", "1", 3)<<std::endl;
+    std::cout<<"Compare 3:  "<<BCMath::bccomp("1.00001", "1", 5)<<std::endl;
+    std::cout<<"Compare 4:  "<<(BCMath("1")< BCMath("2"))<<std::endl;
+    std::cout<<"Compare 5:  "<<(BCMath("1")<=BCMath("2"))<<std::endl;
+    std::cout<<"Compare 6:  "<<(BCMath("1")> BCMath("2"))<<std::endl;
+    std::cout<<"Compare 7:  "<<(BCMath("1")>=BCMath("2"))<<std::endl;
+    std::cout<<"Compare 8:  "<<(BCMath("2")< BCMath("2"))<<std::endl;
+    std::cout<<"Compare 9:  "<<(BCMath("2")<=BCMath("2"))<<std::endl;
+    std::cout<<"Compare 10: "<<(BCMath("2")> BCMath("2"))<<std::endl;
+    std::cout<<"Compare 11: "<<(BCMath("2")>=BCMath("2"))<<std::endl;
+
+    std::cout<<"Round 1: "<<BCMath::bcround("123.01254").c_str()<<std::endl;
+    std::cout<<"Round 2: "<<BCMath::bcround("-123.01254", 3).c_str()<<std::endl;
+    std::cout<<"Round 3: "<<BCMath::bcround("123.01254", 2).c_str()<<std::endl;
+    pi.round(3);
+    std::cout<<"Round 4: "<<pi.toString().c_str()<<std::endl;
+
+    BCMath part1("-.123");
+    BCMath part2(".123");
+    BCMath part3("123");
+    std::cout<<"Int part 1: "<<part1.getIntPart().c_str()<<std::endl;
+    std::cout<<"Dec part 1: "<<part1.getDecPart().c_str()<<std::endl;
+    std::cout<<"Int part 2: "<<part2.getIntPart().c_str()<<std::endl;
+    std::cout<<"Dec part 2: "<<part2.getDecPart().c_str()<<std::endl;
+    std::cout<<"Int part 3: "<<part3.getIntPart().c_str()<<std::endl;
+    std::cout<<"Dec part 3: "<<part3.getDecPart().c_str()<<std::endl;
 
 
 Result

@@ -24,20 +24,30 @@
 
     URL: https://github.com/vk-com/kphp-kdb/blob/master/KPHP/runtime/bcmath.cpp
 
-    Adapted to QT5:
+    Adapted to STL C++:
         2014 Kijam Lopez B. <klopez@cuado.co>
 */
 
 
-#include "bcmath.h"
+#define BC_ASSERT(cond) ((!(cond)) ? bc_assert(#cond,__FILE__,__LINE__) : bc_noassert())
+
+#include "bcmath_stl.h"
+#include <string.h>
+#include <stdlib.h>
 
 static int bc_scale = 6;
 
-static const QString ONE ("1");
-static const QString ZERO ("0");
+static const std::string ONE ("1");
+static const std::string ZERO ("0");
+
+static void bc_noassert() { }
+static void bc_assert(const char *assertion, const char *file, int line) {
+    std::cerr<<"Critical Error in: "<<assertion<<", File '"<<file<<"' in line "<<line<<"."<<std::endl;
+    exit(-1);
+}
 
 //parse a number into parts, returns scale on success and -1 on error
-static int bc_parse_number (const QString &s, int &lsign, int &lint, int &ldot, int &lfrac, int &lscale) {
+static int bc_parse_number (const std::string &s, int &lsign, int &lint, int &ldot, int &lfrac, int &lscale) {
   int i = 0;
   lsign = 1;
   if (s[i] == '-' || s[i] == '+') {
@@ -80,7 +90,7 @@ static int bc_parse_number (const QString &s, int &lsign, int &lint, int &ldot, 
 //  }
   if (lscale == 0 && lfrac > ldot) {
     lfrac--;
-    Q_ASSERT (lfrac == ldot);
+    BC_ASSERT (lfrac == ldot);
   }
 
   if (lsign < 0 && (lscale == 0 && s[lint] == '0')) {
@@ -89,11 +99,11 @@ static int bc_parse_number (const QString &s, int &lsign, int &lint, int &ldot, 
   return lscale;
 }
 
-static QString bc_zero (int scale) {
+static std::string bc_zero (int scale) {
   if (scale == 0) {
     return ZERO;
   }
-  QString result (scale + 2, '0');
+  std::string result (scale + 2, '0');
   result[1] = '.';
   return result;
 }
@@ -124,12 +134,12 @@ static int bc_comp (const char *lhs, int lint, int ldot, int lfrac, int lscale, 
   return 0;
 }
 
-static QString bc_round (char *lhs, int lint, int ldot, int lfrac, int lscale, int scale, int sign, bool add_trailing_zeroes, bool round_last = false) {
+static std::string bc_round (char *lhs, int lint, int ldot, int lfrac, int lscale, int scale, int sign, bool add_trailing_zeroes, bool round_last = false) {
   while (lhs[lint] == '0' && lint + 1 < ldot) {
     lint++;
   }
 
-  Q_ASSERT (lint > 0 && lscale >= 0 && scale >= 0);
+  BC_ASSERT (lint > 0 && lscale >= 0 && scale >= 0);
 
   if (sign < 0 && lhs[lint] == '0') {
     sign = 1;
@@ -152,7 +162,7 @@ static QString bc_round (char *lhs, int lint, int ldot, int lfrac, int lscale, i
             lhs[lfrac + scale - 1]++;
           } else {
             lfrac--;
-            Q_ASSERT (lfrac == ldot);
+            BC_ASSERT (lfrac == ldot);
 
             int i;
             lhs[lint - 1] = '0';
@@ -178,7 +188,7 @@ static QString bc_round (char *lhs, int lint, int ldot, int lfrac, int lscale, i
 
   if (lscale == 0 && lfrac > ldot) {
     lfrac--;
-    Q_ASSERT (lfrac == ldot);
+    BC_ASSERT (lfrac == ldot);
   }
 
   if (sign < 0) {
@@ -186,19 +196,19 @@ static QString bc_round (char *lhs, int lint, int ldot, int lfrac, int lscale, i
   }
 
   if (lscale == scale || !add_trailing_zeroes) {
-    return QString (QString(lhs + lint).mid(0, lfrac + lscale - lint));
+    return std::string (std::string(lhs + lint).substr(0, lfrac + lscale - lint));
   } else {
-    QString result (QString(lhs + lint).mid(0, lfrac + lscale - lint));
+    std::string result (std::string(lhs + lint).substr(0, lfrac + lscale - lint));
     if (lscale == 0) {
-      result.append('.');
+      result+='.';
     }
     for(int kI = 0; kI < scale - lscale; ++kI)
-        result.append('0');
+        result+='0';
     return result;
   }
 }
 
-static QString bc_add_positive (const char *lhs, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rint, int rdot, int rfrac, int rscale, int scale, int sign) {
+static std::string bc_add_positive (const char *lhs, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rint, int rdot, int rfrac, int rscale, int scale, int sign) {
   int llen = ldot - lint;
   int rlen = rdot - rint;
 
@@ -207,7 +217,7 @@ static QString bc_add_positive (const char *lhs, int lint, int ldot, int lfrac, 
   int result_len = std::max (llen, rlen) + 1;
   int result_scale = std::max (lscale, rscale);
   int result_size = result_len + result_scale + 3;
-  QString result(result_size, '0');
+  std::string result(result_size, '0');
 
   int i, um = 0;
   int cur_pos = result_size;
@@ -245,12 +255,12 @@ static QString bc_add_positive (const char *lhs, int lint, int ldot, int lfrac, 
     um /= 10;
   }
   resint = cur_pos;
-  Q_ASSERT (cur_pos > 0);
+  BC_ASSERT (cur_pos > 0);
 
-  return bc_round ((char*)result.toUtf8().data(), resint, resdot, resfrac, resscale, scale, sign, 1);
+  return bc_round ((char*)result.data(), resint, resdot, resfrac, resscale, scale, sign, 1);
 }
 
-static QString bc_sub_positive (const char *lhs, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rint, int rdot, int rfrac, int rscale, int scale, int sign) {
+static std::string bc_sub_positive (const char *lhs, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rint, int rdot, int rfrac, int rscale, int scale, int sign) {
   int llen = ldot - lint;
   int rlen = rdot - rint;
 
@@ -259,7 +269,7 @@ static QString bc_sub_positive (const char *lhs, int lint, int ldot, int lfrac, 
   int result_len = llen;
   int result_scale = std::max (lscale, rscale);
   int result_size = result_len + result_scale + 3;
-  QString result (result_size, '0');
+  std::string result (result_size, '0');
 
   int i, um = 0, next_um = 0;
   int cur_pos = result_size;
@@ -307,12 +317,12 @@ static QString bc_sub_positive (const char *lhs, int lint, int ldot, int lfrac, 
     result[--cur_pos] = (char)(um + '0');
   }
   resint = cur_pos;
-  Q_ASSERT (cur_pos > 0);
+  BC_ASSERT (cur_pos > 0);
 
-  return bc_round ((char*)result.toUtf8().data(), resint, resdot, resfrac, resscale, scale, sign, 1);
+  return bc_round ((char*)result.data(), resint, resdot, resfrac, resscale, scale, sign, 1);
 }
 
-static QString bc_mul_positive (const char *lhs, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rint, int rdot, int rfrac, int rscale, int scale, int sign) {
+static std::string bc_mul_positive (const char *lhs, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rint, int rdot, int rfrac, int rscale, int scale, int sign) {
   int llen = ldot - lint;
   int rlen = rdot - rint;
 
@@ -321,7 +331,7 @@ static QString bc_mul_positive (const char *lhs, int lint, int ldot, int lfrac, 
   int result_len = llen + rlen;
   int result_scale = lscale + rscale;
   int result_size = result_len + result_scale + 3;
-  QString result (result_size, '0');
+  std::string result (result_size, '0');
 
   int *res = (int *)malloc(sizeof (int) * result_size);
   memset(res, 0, sizeof (int) * result_size);
@@ -352,14 +362,19 @@ static QString bc_mul_positive (const char *lhs, int lint, int ldot, int lfrac, 
     result[--cur_pos] = (char)(res[i] + '0');
   }
   resint = cur_pos;
-  Q_ASSERT (cur_pos > 0);
+  BC_ASSERT (cur_pos > 0);
 
   free(res);
 
-  return bc_round ((char*)result.toUtf8().data(), resint, resdot, resfrac, resscale, scale, sign, 0);
+  char *data = (char*)malloc((result.length()+1)*sizeof(char));
+  sprintf(data, result.c_str());
+  std::string ret = bc_round (data, resint, resdot, resfrac, resscale, scale, sign, 0);
+  free(data);
+
+  return ret;
 }
 
-static QString bc_div_positive (const char *lhs, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rint, int rdot, int rfrac, int rscale, int scale, int sign) {
+static std::string bc_div_positive (const char *lhs, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rint, int rdot, int rfrac, int rscale, int scale, int sign) {
   int llen = ldot - lint;
   int rlen = rdot - rint;
 
@@ -370,7 +385,7 @@ static QString bc_div_positive (const char *lhs, int lint, int ldot, int lfrac, 
   int result_size = result_len + result_scale + 3;
 
   if (rscale == 0 && rhs[rint] == '0') {
-    qWarning() << ("Division by zero in function bcdiv");
+    std::cerr << ("Division by zero in function bcdiv")<< std::endl<< std::endl;
     return ZERO;
   }
 
@@ -397,7 +412,7 @@ static QString bc_div_positive (const char *lhs, int lint, int ldot, int lfrac, 
     divider_skip++;
     divider_len--;
   }
-  Q_ASSERT (divider_len > 0);
+  BC_ASSERT (divider_len > 0);
 
   int cur_pow = llen - rlen + divider_skip;
   int cur_pos = 2;
@@ -410,7 +425,7 @@ static QString bc_div_positive (const char *lhs, int lint, int ldot, int lfrac, 
     return bc_zero (scale);
   }
 
-  QString result (result_size, '0');
+  std::string result (result_size, '0');
   resint = cur_pos;
   if (cur_pow < 0) {
     result[cur_pos++] = '0';
@@ -472,11 +487,16 @@ static QString bc_div_positive (const char *lhs, int lint, int ldot, int lfrac, 
   free(dividend);
   free(divider);
 
-  return bc_round ((char*)result.toUtf8().data(), resint, resdot, resfrac, resscale, scale, sign, 0);
+  char *data = (char*)malloc((result.length()+1)*sizeof(char));
+  sprintf(data, result.c_str());
+  std::string ret = bc_round (data, resint, resdot, resfrac, resscale, scale, sign, 0);
+  free(data);
+
+  return ret;
 }
 
 
-static QString bc_add (const char *lhs, int lsign, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rsign, int rint, int rdot, int rfrac, int rscale, int scale) {
+static std::string bc_add (const char *lhs, int lsign, int lint, int ldot, int lfrac, int lscale, const char *rhs, int rsign, int rint, int rdot, int rfrac, int rscale, int scale) {
   if (lsign > 0 && rsign > 0) {
     return bc_add_positive (lhs, lint, ldot, lfrac, lscale, rhs, rint, rdot, rfrac, rscale, scale, 1);
   }
@@ -501,10 +521,11 @@ static QString bc_add (const char *lhs, int lsign, int lint, int ldot, int lfrac
     return bc_add_positive (lhs, lint, ldot, lfrac, lscale, rhs, rint, rdot, rfrac, rscale, scale, -1);
   }
 
-  Q_ASSERT (0);
+  BC_ASSERT (0);
+  return ZERO; //Is dummy...
 }
 
-void QBCMath::bcscale (int scale) {
+void BCMath::bcscale (int scale) {
   if (scale < 0) {
     bc_scale = 0;
   } else {
@@ -512,65 +533,65 @@ void QBCMath::bcscale (int scale) {
   }
 }
 
-QString QBCMath::bcdiv (const QString &lhs, const QString &rhs, int scale) {
+std::string BCMath::bcdiv (const std::string &lhs, const std::string &rhs, int scale) {
   if (scale == INT_MIN) {
     scale = bc_scale;
   }
   if (scale < 0) {
-    qWarning() << ("Wrong parameter scale "<<scale<<" in function bcdiv", );
+    std::cerr << "Wrong parameter scale = "<<scale<<" in function bcdiv"<< std::endl;
     scale = 0;
   }
-  if (lhs.isEmpty()) {
+  if (lhs.empty()) {
     return bc_zero (scale);
   }
-  if (rhs.isEmpty()) {
-    qWarning() << ("Division by empty "<<  rhs.toStdString().c_str() <<" in function bcdiv");
+  if (rhs.empty()) {
+    std::cerr << "Division by empty "<<  rhs.c_str() <<" in function bcdiv"<< std::endl;
     return bc_zero (scale);
   }
 
   int lsign, lint, ldot, lfrac, lscale;
   if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) < 0) {
-    qWarning() << "First parameter \""<<  lhs.toStdString().c_str() <<"\" in function bcdiv is not a number";
+    std::cerr << "First parameter \""<<  lhs.c_str() <<"\" in function bcdiv is not a number"<< std::endl;
     return ZERO;
   }
 
   int rsign, rint, rdot, rfrac, rscale;
   if (bc_parse_number (rhs, rsign, rint, rdot, rfrac, rscale) < 0) {
-    qWarning() << "Second parameter \""<< rhs.toStdString().c_str() <<"\" in function bcdiv is not a number";
+    std::cerr << "Second parameter \""<< rhs.c_str() <<"\" in function bcdiv is not a number"<< std::endl;
     return ZERO;
   }
 
-  return bc_div_positive (lhs.toStdString().c_str(), lint, ldot, lfrac, lscale, rhs.toStdString().c_str(), rint, rdot, rfrac, rscale, scale, lsign * rsign);
+  return bc_div_positive (lhs.c_str(), lint, ldot, lfrac, lscale, rhs.c_str(), rint, rdot, rfrac, rscale, scale, lsign * rsign);
 }
 
-QString QBCMath::bcmod (const QString &lhs, const QString &rhs) {
-  if (lhs.isEmpty()) {
+std::string BCMath::bcmod (const std::string &lhs, const std::string &rhs) {
+  if (lhs.empty()) {
     return ZERO;
   }
-  if (rhs.isEmpty()) {
-    qWarning() << ("Modulo by empty "<<  rhs.toStdString().c_str() <<" in function bcmod");
+  if (rhs.empty()) {
+    std::cerr << "Modulo by empty "<<  rhs.c_str() <<" in function bcmod"<< std::endl;
     return ZERO;
   }
 
   int lsign, lint, ldot, lfrac, lscale;
   if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) != 0) {
-    qWarning() << "First parameter \""<< lhs.toStdString().c_str() <<"\" in function bcmod is not an integer";
+    std::cerr << "First parameter \""<< lhs.c_str() <<"\" in function bcmod is not an integer"<< std::endl;
     return ZERO;
   }
 
   int rsign, rint, rdot, rfrac, rscale;
   if (bc_parse_number (rhs, rsign, rint, rdot, rfrac, rscale) != 0) {
-    qWarning() << "Second parameter \""<< rhs.toStdString().c_str() <<"\" in function bcmod is not an integer";
+    std::cerr << "Second parameter \""<< rhs.c_str() <<"\" in function bcmod is not an integer"<< std::endl;
     return ZERO;
   }
 
   long long mod = 0;
   for (int i = rint; i < rdot; i++) {
-    mod = mod * 10 + rhs[i].cell() - '0';
+    mod = mod * 10 + rhs[i] - '0';
   }
 
   if (rdot - rint > 18 || mod == 0) {
-    qWarning() << "Second parameter \""<< rhs.toStdString().c_str() <<"\" in function bcmod is not a non zero integer less than 1e18 by absolute value";
+    std::cerr << "Second parameter \""<< rhs.c_str() <<"\" in function bcmod is not a non zero integer less than 1e18 by absolute value"<< std::endl;
     return ZERO;
   }
 
@@ -580,7 +601,7 @@ QString QBCMath::bcmod (const QString &lhs, const QString &rhs) {
     if (res >= mod) {
       res -= mod;
     }
-    res = res * 5 + lhs[i].cell() - '0';
+    res = res * 5 + lhs[i] - '0';
     while (res >= mod) {
       res -= mod;
     }
@@ -597,36 +618,36 @@ QString QBCMath::bcmod (const QString &lhs, const QString &rhs) {
     buffer[--cur_pos] = '-';
   }
 
-  return QString(QString(buffer + cur_pos).mid(0, 20 - cur_pos));
+  return std::string(std::string(buffer + cur_pos).substr(0, 20 - cur_pos));
 }
 
-QString QBCMath::bcpow (const QString &lhs, const QString &rhs) {
-  if (lhs.isEmpty()) {
+std::string BCMath::bcpow (const std::string &lhs, const std::string &rhs) {
+  if (lhs.empty()) {
     return ZERO;
   }
-  if (rhs.isEmpty()) {
+  if (rhs.empty()) {
     return ONE;
   }
 
   int lsign, lint, ldot, lfrac, lscale;
   if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) != 0) {
-    qWarning() << "First parameter \""<<lhs.toStdString().c_str()<<"\" in function bcpow is not an integer";
+    std::cerr << "First parameter \""<<lhs.c_str()<<"\" in function bcpow is not an integer"<< std::endl;
     return ZERO;
   }
 
   int rsign, rint, rdot, rfrac, rscale;
   if (bc_parse_number (rhs, rsign, rint, rdot, rfrac, rscale) != 0) {
-    qWarning() << "Second parameter \""<< rhs.toStdString().c_str() <<"\" in function bcpow is not an integer";
+    std::cerr << "Second parameter \""<< rhs.c_str() <<"\" in function bcpow is not an integer"<< std::endl;
     return ZERO;
   }
 
   long long deg = 0;
   for (int i = rint; i < rdot; i++) {
-    deg = deg * 10 + rhs[i].cell() - '0';
+    deg = deg * 10 + rhs[i] - '0';
   }
 
   if (rdot - rint > 18 || (rsign < 0 && deg != 0)) {
-    qWarning() << "Second parameter \""<< rhs.toStdString().c_str() <<"\" in function bcpow is not a non negative integer less than 1e18";
+    std::cerr << "Second parameter \""<< rhs.c_str() <<"\" in function bcpow is not a non negative integer less than 1e18"<< std::endl;
     return ZERO;
   }
 
@@ -634,8 +655,8 @@ QString QBCMath::bcpow (const QString &lhs, const QString &rhs) {
     return ONE;
   }
 
-  QString result = ONE;
-  QString mul = lhs;
+  std::string result = ONE;
+  std::string mul = lhs;
   while (deg > 0) {
     if (deg & 1) {
       result = bcmul (result, mul, 0);
@@ -647,11 +668,11 @@ QString QBCMath::bcpow (const QString &lhs, const QString &rhs) {
   return result;
 }
 
-QString QBCMath::bcadd (const QString &lhs, const QString &rhs, int scale) {
-  if (lhs.isEmpty()) {
+std::string BCMath::bcadd (const std::string &lhs, const std::string &rhs, int scale) {
+  if (lhs.empty()) {
     return bcadd (ZERO, rhs, scale);
   }
-  if (rhs.isEmpty()) {
+  if (rhs.empty()) {
     return bcadd (lhs, ZERO, scale);
   }
 
@@ -659,30 +680,30 @@ QString QBCMath::bcadd (const QString &lhs, const QString &rhs, int scale) {
     scale = bc_scale;
   }
   if (scale < 0) {
-    qWarning() << "Wrong parameter scale = "<< scale <<" in function bcadd";
+    std::cerr << "Wrong parameter scale = "<< scale <<" in function bcadd"<< std::endl;
     scale = 0;
   }
 
   int lsign, lint, ldot, lfrac, lscale;
   if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) < 0) {
-    qWarning() << "First parameter \""<< lhs.toStdString().c_str() << "\" in function bcadd is not a number";
+    std::cerr << "First parameter \""<< lhs.c_str() << "\" in function bcadd is not a number"<< std::endl;
     return bc_zero (scale);
   }
 
   int rsign, rint, rdot, rfrac, rscale;
   if (bc_parse_number (rhs, rsign, rint, rdot, rfrac, rscale) < 0) {
-    qWarning() << "Second parameter \""<< rhs.toStdString().c_str() << "\" in function bcadd is not a number";
+    std::cerr << "Second parameter \""<< rhs.c_str() << "\" in function bcadd is not a number"<< std::endl;
     return bc_zero (scale);
   }
 
-  return bc_add (lhs.toStdString().c_str(), lsign, lint, ldot, lfrac, lscale, rhs.toStdString().c_str(), rsign, rint, rdot, rfrac, rscale, scale);
+  return bc_add (lhs.c_str(), lsign, lint, ldot, lfrac, lscale, rhs.c_str(), rsign, rint, rdot, rfrac, rscale, scale);
 }
 
-QString QBCMath::bcsub (const QString &lhs, const QString &rhs, int scale) {
-  if (lhs.isEmpty()) {
+std::string BCMath::bcsub (const std::string &lhs, const std::string &rhs, int scale) {
+  if (lhs.empty()) {
     return bcsub (ZERO, rhs, scale);
   }
-  if (rhs.isEmpty()) {
+  if (rhs.empty()) {
     return bcsub (lhs, ZERO, scale);
   }
 
@@ -690,32 +711,32 @@ QString QBCMath::bcsub (const QString &lhs, const QString &rhs, int scale) {
     scale = bc_scale;
   }
   if (scale < 0) {
-    qWarning() << "Wrong parameter scale = "<< scale <<" in function bcsub";
+    std::cerr << "Wrong parameter scale = "<< scale <<" in function bcsub"<< std::endl;
     scale = 0;
   }
 
   int lsign, lint, ldot, lfrac, lscale;
   if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) < 0) {
-    qWarning() << "First parameter \""<<lhs.toStdString().c_str()<<"\" in function bcsub is not a number";
+    std::cerr << "First parameter \""<<lhs.c_str()<<"\" in function bcsub is not a number"<< std::endl;
     return bc_zero (scale);
   }
 
   int rsign, rint, rdot, rfrac, rscale;
   if (bc_parse_number (rhs, rsign, rint, rdot, rfrac, rscale) < 0) {
-    qWarning() << "Second parameter \""<<rhs.toStdString().c_str()<<"\" in function bcsub is not a number";
+    std::cerr << "Second parameter \""<<rhs.c_str()<<"\" in function bcsub is not a number"<< std::endl;
     return bc_zero (scale);
   }
 
   rsign *= -1;
 
-  return bc_add (lhs.toStdString().c_str(), lsign, lint, ldot, lfrac, lscale, rhs.toStdString().c_str(), rsign, rint, rdot, rfrac, rscale, scale);
+  return bc_add (lhs.c_str(), lsign, lint, ldot, lfrac, lscale, rhs.c_str(), rsign, rint, rdot, rfrac, rscale, scale);
 }
 
-QString QBCMath::bcmul (const QString &lhs, const QString &rhs, int scale) {
-  if (lhs.isEmpty()) {
+std::string BCMath::bcmul (const std::string &lhs, const std::string &rhs, int scale) {
+  if (lhs.empty()) {
     return bcmul (ZERO, rhs, scale);
   }
-  if (rhs.isEmpty()) {
+  if (rhs.empty()) {
     return bcmul (lhs, ZERO, scale);
   }
 
@@ -723,50 +744,50 @@ QString QBCMath::bcmul (const QString &lhs, const QString &rhs, int scale) {
     scale = bc_scale;
   }
   if (scale < 0) {
-    qWarning() << "Wrong parameter scale = "<<scale<<" in function bcmul";
+    std::cerr << "Wrong parameter scale = "<<scale<<" in function bcmul"<< std::endl;
     scale = 0;
   }
 
   int lsign, lint, ldot, lfrac, lscale;
   if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) < 0) {
-    qWarning() << "First parameter \""<<lhs.toStdString().c_str()<<"\" in function bcmul is not a number";
+    std::cerr << "First parameter \""<<lhs.c_str()<<"\" in function bcmul is not a number"<< std::endl;
     return ZERO;
   }
 
   int rsign, rint, rdot, rfrac, rscale;
   if (bc_parse_number (rhs, rsign, rint, rdot, rfrac, rscale) < 0) {
-    qWarning() << "Second parameter \""<<rhs.toStdString().c_str()<<"\" in function bcmul is not a number";
+    std::cerr << "Second parameter \""<<rhs.c_str()<<"\" in function bcmul is not a number"<< std::endl;
     return ZERO;
   }
 
-  return bc_mul_positive (lhs.toStdString().c_str(), lint, ldot, lfrac, lscale, rhs.toStdString().c_str(), rint, rdot, rfrac, rscale, scale, lsign * rsign);
+  return bc_mul_positive (lhs.c_str(), lint, ldot, lfrac, lscale, rhs.c_str(), rint, rdot, rfrac, rscale, scale, lsign * rsign);
 }
 
-int QBCMath::bccomp (const QString &lhs, const QString &rhs, int scale) {
-  if (lhs.isEmpty()) {
-    return QBCMath::bccomp (ZERO, rhs, scale);
+int BCMath::bccomp (const std::string &lhs, const std::string &rhs, int scale) {
+  if (lhs.empty()) {
+    return BCMath::bccomp (ZERO, rhs, scale);
   }
-  if (rhs.isEmpty()) {
-    return QBCMath::bccomp (lhs, ZERO, scale);
+  if (rhs.empty()) {
+    return BCMath::bccomp (lhs, ZERO, scale);
   }
 
   if (scale == INT_MIN) {
     scale = bc_scale;
   }
   if (scale < 0) {
-    qWarning() << "Wrong parameter scale = "<<scale<<" in function bccomp";
+    std::cerr << "Wrong parameter scale = "<<scale<<" in function bccomp"<< std::endl;
     scale = 0;
   }
 
   int lsign, lint, ldot, lfrac, lscale;
   if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) < 0) {
-    qWarning() << "First parameter \""<<lhs.toStdString().c_str()<<"\" in function bccomp is not a number";
+    std::cerr << "First parameter \""<<lhs.c_str()<<"\" in function bccomp is not a number"<< std::endl;
     return 0;
   }
 
   int rsign, rint, rdot, rfrac, rscale;
   if (bc_parse_number (rhs, rsign, rint, rdot, rfrac, rscale) < 0) {
-    qWarning() << "Second parameter \""<<rhs.toStdString().c_str()<<"\" in function bccomp is not a number";
+    std::cerr << "Second parameter \""<<rhs.c_str()<<"\" in function bccomp is not a number"<< std::endl;
     return 0;
   }
 
@@ -774,12 +795,12 @@ int QBCMath::bccomp (const QString &lhs, const QString &rhs, int scale) {
     return (lsign - rsign) / 2;
   }
 
-  return (1 - 2 * (lsign < 0)) * bc_comp (lhs.toStdString().c_str(), lint, ldot, lfrac, lscale, rhs.toStdString().c_str(), rint, rdot, rfrac, rscale, scale);
+  return (1 - 2 * (lsign < 0)) * bc_comp (lhs.c_str(), lint, ldot, lfrac, lscale, rhs.c_str(), rint, rdot, rfrac, rscale, scale);
 }
 
-QString QBCMath::bcround (const QString &lhs, int scale) {
-    if (lhs.isEmpty()) {
-      return QBCMath::bcround (ZERO, scale);
+std::string BCMath::bcround (const std::string &lhs, int scale) {
+    if (lhs.empty()) {
+      return BCMath::bcround (ZERO, scale);
     }
 
     if (scale == INT_MIN) {
@@ -787,21 +808,26 @@ QString QBCMath::bcround (const QString &lhs, int scale) {
     }
 
     if (scale < 0) {
-      qWarning() << "Wrong parameter scale = "<<scale<<" in function bccomp";
+      std::cerr << "Wrong parameter scale = "<<scale<<" in function bccomp"<< std::endl;
       scale = 0;
     }
 
     int lsign, lint, ldot, lfrac, lscale;
     if (bc_parse_number (lhs, lsign, lint, ldot, lfrac, lscale) < 0) {
-      qWarning() << "First parameter \""<<lhs.toStdString().c_str()<<"\" in function bcround is not a number";
+      std::cerr << "First parameter \""<<lhs.c_str()<<"\" in function bcround is not a number"<< std::endl;
       return 0;
     }
 
     int len = lhs.size();
-    QString result(len + 1, '0');
+    std::string result(len + 1, '0');
     for(int i = len-1;i>=lint;--i) {
         result[i+1] = lhs[i];
     }
 
-    return bc_round ((char*)result.toUtf8().data(), lint+1, ldot+1, lfrac+1, lscale, scale, lsign, 1, 1);
+    char *data = (char*)malloc((result.length()+1)*sizeof(char));
+    sprintf(data, result.c_str());
+    std::string ret = bc_round (data, lint+1, ldot+1, lfrac+1, lscale, scale, lsign, 1, 1);
+    free(data);
+
+    return ret;
 }
