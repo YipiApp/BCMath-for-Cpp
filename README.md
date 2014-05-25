@@ -7,46 +7,46 @@ BC-Math PHP (https://php.net/manual/en/intro.bc.php) Adapted to Qt5
 BC Math Functions
 ===========
 
-- QBCMath::bcadd — Add two arbitrary precision numbers (https://php.net/manual/en/function.bcadd.php)
+- QBCMath::bcadd: Add two arbitrary precision numbers (https://php.net/manual/en/function.bcadd.php)
     
-- QBCMath::bccomp — Compare two arbitrary precision numbers (https://php.net/manual/en/function.bccomp.php)
+- QBCMath::bccomp: Compare two arbitrary precision numbers (https://php.net/manual/en/function.bccomp.php)
     
-- QBCMath::bcdiv — Divide two arbitrary precision numbers (https://php.net/manual/en/function.bcdiv.php)
+- QBCMath::bcdiv: Divide two arbitrary precision numbers (https://php.net/manual/en/function.bcdiv.php)
     
-- QBCMath::bcmod — Get modulus of an arbitrary precision number (https://php.net/manual/en/function.bcmod.php)
+- QBCMath::bcmod: Get modulus of an arbitrary precision number (https://php.net/manual/en/function.bcmod.php)
     
-- QBCMath::bcmul — Multiply two arbitrary precision numbers (https://php.net/manual/en/function.bcmul.php)
+- QBCMath::bcmul: Multiply two arbitrary precision numbers (https://php.net/manual/en/function.bcmul.php)
     
-- QBCMath::bcpow — Raise an arbitrary precision number to another (https://php.net/manual/en/function.bcpow.php)
+- QBCMath::bcpow: Raise an arbitrary precision number to another (https://php.net/manual/en/function.bcpow.php)
     
-- QBCMath::bcscale — Set default scale parameter for all bc math functions (https://php.net/manual/en/function.bcscale.php)
+- QBCMath::bcscale: Set default scale parameter for all bc math functions (https://php.net/manual/en/function.bcscale.php)
     
-- QBCMath::bcsub — Subtract one arbitrary precision number from another (https://php.net/manual/en/function.bcsub.php)
+- QBCMath::bcsub: Subtract one arbitrary precision number from another (https://php.net/manual/en/function.bcsub.php)
 
-- QBCMath::bcround — Round decimals, receives a single parameter to determine how many decimal places should be.
+- QBCMath::bcround: Round decimals, receives a single parameter to determine how many decimal places should be.
     
     
 
 Funciones de BC Math
 ===========
 
-- QBCMath::bcadd — Añade dos números de precisión arbitrária (https://php.net/manual/es/function.bcadd.php)
+- QBCMath::bcadd: AÃ±ade dos nÃºmeros de precisiÃ³n arbitrÃ¡ria (https://php.net/manual/es/function.bcadd.php)
     
-- QBCMath::bccomp — Compara dos números de precisión arbitraria (https://php.net/manual/es/function.bccomp.php)
+- QBCMath::bccomp: Compara dos nÃºmeros de precisiÃ³n arbitraria (https://php.net/manual/es/function.bccomp.php)
     
-- QBCMath::bcdiv — Divide dos números de precisión arbitraria (https://php.net/manual/es/function.bcdiv.php)
+- QBCMath::bcdiv: Divide dos nÃºmeros de precisiÃ³n arbitraria (https://php.net/manual/es/function.bcdiv.php)
     
-- QBCMath::bcmod — Obtiene el módulo de un número de precisión arbitraria (https://php.net/manual/es/function.bcmod.php)
+- QBCMath::bcmod: Obtiene el mÃ³dulo de un nÃºmero de precisiÃ³n arbitraria (https://php.net/manual/es/function.bcmod.php)
     
-- QBCMath::bcmul — Multiplica dos números de precisión arbitraria (https://php.net/manual/es/function.bcmul.php)
+- QBCMath::bcmul: Multiplica dos nÃºmeros de precisiÃ³n arbitraria (https://php.net/manual/es/function.bcmul.php)
     
-- QBCMath::bcpow — Elevar un número de precisión arbitraria a otro (https://php.net/manual/es/function.bcpow.php)
+- QBCMath::bcpow: Elevar un nÃºmero de precisiÃ³n arbitraria a otro (https://php.net/manual/es/function.bcpow.php)
     
-- QBCMath::bcscale — Establece los parametros de scale por defecto para todas las funciones matemáticas de bc (https://php.net/manual/es/function.bcscale.php)
+- QBCMath::bcscale: Establece los parametros de scale por defecto para todas las funciones matemÃ¡ticas de bc (https://php.net/manual/es/function.bcscale.php)
     
-- QBCMath::bcsub — Resta un número de precisión arbitraria de otro (https://php.net/manual/es/function.bcsub.php)
+- QBCMath::bcsub: Resta un nÃºmero de precisiÃ³n arbitraria de otro (https://php.net/manual/es/function.bcsub.php)
 
-- QBCMath::bcround — Redondea los decimales, recibe un solo parámetro para determinar cuantos decimales deben quedar.
+- QBCMath::bcround: Redondea los decimales, recibe un solo parÃ¡metro para determinar cuantos decimales deben quedar.
     
 USAGE:
 ===========
@@ -124,63 +124,38 @@ Result
 ===========
 
     Result BigDecimal 1:  198005530669253749533290222782634796336450786581284861381777714804795900171726938603997395193921984842256586113024
-
     Result BigDecimal 2:  198005530669253749533290222782634796336450786581284861381777714804795900171726938603997395193921984842256586113022.7700
-
     Result BigDecimal 3:  243546802723182111925946974022640799493834467494980379499586589209898957211224134482916796088524041355975600919018.0071
-
     Result BigDecimal 4:  -299562567349513997668914778047848183377416395018825866784491504728175717369805685413987659188884570867849989130392.1487
 
     Result Super Precision 1:  -5943534512345234542.7583001856941315459727023167204971158028306006248941790250554076921835
-
     Result Super Precision 2:  -5943534512345234549.0414854928737180228979890832795028841971693993751058209749445923078164
-
     Result Super Precision 3:  -18672164360341183116.9114783895073349180904753962992796943871920962352436079118338887287186
-
     Result Super Precision 4:  -1891885794154043400.2804849527556211973567525043250278948318788149660700494315139982452600
     
     Other 1:  8023400.1075
-    
     Other 2:  1000008.0368
     
     Compare 1:   -1
-    
     Compare 2:   0
-    
     Compare 3:   1
-    
     Compare 4:   true
-    
     Compare 5:   true
-    
     Compare 6:   false
-    
     Compare 7:   false
-    
     Compare 8:   false
-    
     Compare 9:   true
-    
     Compare 10:  false
-    
     Compare 11:  true
     
     Round 1:  123.0125
-    
     Round 2:  -123.013
-
     Round 3:  123.01
-    
     Round 4:  3.142
     
     Int part 1:  -0
-    
     Dec part 1:  123
-    
     Int part 2:  0
-    
     Dec part 2:  123
-    
     Int part 3:  123
-    
     Dec part 3:  0
