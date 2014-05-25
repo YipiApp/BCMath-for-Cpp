@@ -1,7 +1,7 @@
 BC-Math-Qt5
 ===========
 
-BC-Math PHP (https://php.net/manual/en/intro.bc.php) Adapted to Qt5
+BC-Math PHP (https://php.net/manual/en/intro.bc.php) Adapted to Qt. Tested on QT5.
 
 
 BC Math Functions
